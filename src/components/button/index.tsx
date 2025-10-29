@@ -1,9 +1,9 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type Props = {
   children?: ReactNode;
   isLoading?: boolean;
-} & HTMLAttributes<HTMLButtonElement>;
+} & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button = (props: Props) => {
   const { children, isLoading = false, ...rest } = props;

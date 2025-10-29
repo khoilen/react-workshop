@@ -1,7 +1,6 @@
 import {
   forwardRef,
   type DetailedHTMLProps,
-  type HTMLAttributes,
   type InputHTMLAttributes,
 } from "react";
 
@@ -10,17 +9,18 @@ export type InputType = Exclude<
     InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
   >["type"],
-  "password"
+  "checkbox" | "radio"
 >;
 
 type Props = {
   label?: string;
   placeholder?: string;
   type?: string;
-} & HTMLAttributes<HTMLInputElement>;
+  error?: string;
+} & InputHTMLAttributes<HTMLInputElement>;
 
 export const Input = forwardRef<HTMLInputElement, Props>((props, ref) => {
-  const { label, placeholder, type = "text", ...rest } = props;
+  const { label, placeholder, type = "text", error, ...rest } = props;
 
   return (
     <>
@@ -37,6 +37,7 @@ export const Input = forwardRef<HTMLInputElement, Props>((props, ref) => {
         placeholder={placeholder}
         {...rest}
       />
+      {error && <small className="text-red-600 my-2">{error}</small>}
     </>
   );
 });
