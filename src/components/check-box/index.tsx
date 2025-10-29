@@ -1,6 +1,6 @@
-import { forwardRef, type HTMLAttributes } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
-type Props = { label: string } & HTMLAttributes<HTMLInputElement>;
+type Props = { label: string } & InputHTMLAttributes<HTMLInputElement>;
 
 const CheckBox = forwardRef<HTMLInputElement, Props>((props, ref) => {
   const { className, label, ...rest } = props;

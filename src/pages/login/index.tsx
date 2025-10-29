@@ -1,12 +1,15 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import Button from "../../components/button";
 import CheckBox from "../../components/check-box";
 import Input from "../../components/input";
 
-import { useLogin } from "../../hooks/use-login";
+import { useLoginMutation } from "../../hooks/use-login-mutation";
+
+import { ADMIN_URL } from "../../constant/url";
+import { TOKEN } from "../../constant/auth";
+import { useState } from "react";
 
 type LoginForm = {
   username: string;
@@ -15,37 +18,36 @@ type LoginForm = {
 };
 
 const Login = () => {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<LoginForm>({
-    defaultValues: {
-      username: "",
-      password: "",
-      remember: false,
-    },
-    mode: "onBlur",
-    reValidateMode: "onBlur",
-  });
+    watch,
+  } = useForm<LoginForm>();
 
-  const { mutateAsync: login, isPending } = useLogin();
+  const { mutateAsync: login, isPending } = useLoginMutation();
+  const [serverError, setServerError] = useState<string>("");
 
-  const onSubmit = (data: LoginForm) => {
-    setErrorMessage(null);
-    login({ username: data.username, password: data.password })
-      .then((response) => {
-        const { accessToken } = response.data;
-        localStorage.setItem("token", accessToken);
-        return navigate("/admin");
-      })
-      .catch((error) => {
-        setErrorMessage(error.message);
+  const onSubmit = async (data: LoginForm) => {
+    try {
+      const response = await login({
+        username: data.username,
+        password: data.password,
       });
+
+      const { accessToken } = response.data;
+      localStorage.setItem(TOKEN, accessToken);
+      return navigate(ADMIN_URL.DASHBOARD);
+    } catch (err) {
+      setServerError((err as Error)?.message || "Login failed");
+    }
   };
+
+  watch(() => {
+    if (serverError) setServerError("");
+  });
 
   return (
     <>
@@ -55,34 +57,32 @@ const Login = () => {
             label="User name"
             required
             placeholder="Enter your username"
+            error={errors.username?.message}
             {...register("username", {
               required: "Username is required",
             })}
           />
-          {errors.username?.message && (
-            <small className="text-red-600">{errors.username.message}</small>
-          )}
         </div>
         <div className="mb-4">
           <Input
             label="Password"
             type="password"
             placeholder="Enter your password"
+            error={errors.password?.message}
             {...register("password", {
               required: "Password is required",
             })}
           />
-          {errors.password?.message && (
-            <small className="text-red-600">{errors.password.message}</small>
-          )}
         </div>
         <div className="my-4">
           <CheckBox label="Remember me" {...register("remember")} />
         </div>
-        {errorMessage && (
-          <small className="text-red-600 my-4 block">{errorMessage}</small>
+        {serverError && (
+          <small className="text-red-600 my-4 block">{serverError}</small>
         )}
-        <Button isLoading={isPending}>Login</Button>
+        <Button isLoading={isPending} disabled={isPending}>
+          Login
+        </Button>
       </form>
       <p className="mt-4 text-sm text-center text-gray-600">
         Don't have an account?

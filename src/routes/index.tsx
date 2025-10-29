@@ -1,18 +1,21 @@
 import { createBrowserRouter, redirect } from "react-router";
 
 import Login from "../pages/login";
-import Users from "../pages/users";
+import Dashboard from "../pages/dashboard";
 
 import AuthLayout from "../layouts/auth";
 import AdminLayout from "../layouts/admin";
 
+import { ADMIN_URL, AUTH_URL } from "../constant/url";
+
 import AuthRedirect from "./auth-redirect";
+import { TOKEN } from "../constant/auth";
 
 const requireAuth = () => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem(TOKEN);
 
   if (!token) {
-    throw redirect("/auth/login");
+    throw redirect(AUTH_URL.LOGIN);
   }
 
   return null;
@@ -24,18 +27,17 @@ const Router = createBrowserRouter([
     Component: AuthRedirect,
   },
   {
-    path: "/auth",
+    path: AUTH_URL.BASE,
     Component: AuthLayout,
-    children: [
-      { index: true, Component: Login },
-      { path: "login", Component: Login },
-    ],
+    children: [{ path: AUTH_URL.LOGIN, index: true, Component: Login }],
   },
   {
-    path: "/admin",
+    path: ADMIN_URL.BASE,
     Component: AdminLayout,
     middleware: [requireAuth],
-    children: [{ index: true, Component: Users }],
+    children: [
+      { path: ADMIN_URL.DASHBOARD, index: true, Component: Dashboard },
+    ],
   },
 ]);
 
