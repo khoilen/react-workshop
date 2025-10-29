@@ -29,14 +29,21 @@ const Router = createBrowserRouter([
   {
     path: AUTH_URL.BASE,
     Component: AuthLayout,
-    children: [{ path: AUTH_URL.LOGIN, index: true, Component: Login }],
+    children: [
+      { index: true, Component: Login },
+      { path: AUTH_URL.LOGIN, index: true, Component: Login },
+    ],
   },
   {
     path: ADMIN_URL.BASE,
     Component: AdminLayout,
     middleware: [requireAuth],
     children: [
-      { path: ADMIN_URL.DASHBOARD, index: true, Component: Dashboard },
+      { index: true, Component: Dashboard },
+      {
+        path: ADMIN_URL.DASHBOARD,
+        Component: Dashboard,
+      },
     ],
   },
 ]);
