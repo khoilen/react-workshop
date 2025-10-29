@@ -18,7 +18,7 @@ const requireAuth = () => {
     throw redirect(AUTH_URL.LOGIN);
   }
 
-  throw redirect(ADMIN_URL.DASHBOARD);
+  return null;
 };
 
 const Router = createBrowserRouter([
