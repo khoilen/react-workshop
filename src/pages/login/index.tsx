@@ -9,7 +9,6 @@ import { useLoginMutation } from "../../hooks/use-login-mutation";
 
 import { ADMIN_URL } from "../../constant/url";
 import { TOKEN } from "../../constant/auth";
-import { useState } from "react";
 
 type LoginForm = {
   username: string;
@@ -27,8 +26,7 @@ const Login = () => {
     watch,
   } = useForm<LoginForm>();
 
-  const { mutateAsync: login, isPending } = useLoginMutation();
-  const [serverError, setServerError] = useState<string>("");
+  const { mutateAsync: login, isPending, error, reset } = useLoginMutation();
 
   const onSubmit = async (data: LoginForm) => {
     try {
@@ -41,12 +39,12 @@ const Login = () => {
       localStorage.setItem(TOKEN, accessToken);
       return navigate(ADMIN_URL.DASHBOARD);
     } catch (err) {
-      setServerError((err as Error)?.message || "Login failed");
+      console.error("Login failed:", err);
     }
   };
 
   watch(() => {
-    if (serverError) setServerError("");
+    if (error?.message) reset();
   });
 
   return (
@@ -77,8 +75,8 @@ const Login = () => {
         <div className="my-4">
           <CheckBox label="Remember me" {...register("remember")} />
         </div>
-        {serverError && (
-          <small className="text-red-600 my-4 block">{serverError}</small>
+        {error?.message && (
+          <small className="text-red-600 my-4 block">{error.message}</small>
         )}
         <Button isLoading={isPending} disabled={isPending}>
           Login

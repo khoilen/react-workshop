@@ -21,12 +21,6 @@ describe("<Button />", () => {
     await expect.element(getByText(mockChildren)).toBeInTheDocument();
   });
 
-  test("disables the button when isLoading is true", async () => {
-    const { getByRole } = await setup({ isLoading: true });
-    const button = getByRole("button");
-    await expect.element(button).toBeDisabled();
-  });
-
   test.each([
     {
       isLoading: true,
